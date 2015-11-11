@@ -56,6 +56,95 @@ namespace Task1
             return GetEnumerator();
         }
 
+        public void Add(T value)
+        {
+            Insert(value, ref root);
+        }
+
+        public bool Remove(T value)
+        {
+            return Delete(value, ref root);
+        }
+
+        private bool Delete(T value, ref Node node)
+        {
+            if (node == null)
+            {
+                return false;
+            }
+
+            int comp = comparer.Compare(node.data, value);
+            if (comp < 0)
+            {
+                return Delete(value, ref node.right);
+            }
+            if (comp > 0)
+            {
+                return Delete(value, ref node.left);
+            }
+
+            DeleteNode(ref node);
+            count--;
+            return true;
+        }
+
+        private void DeleteNode(ref Node node)
+        {
+            if (node.left == null && node.right == null)
+            {
+                node = null;
+            }
+            else if (node.left == null || node.right == null)
+            {
+                node = node.right ?? node.left;
+            }
+            else
+            {
+                if (node.right.left == null)
+                {
+                    node.right.left = node.left;
+                    node = node.right;
+                }
+                else
+                {
+                    var next = node.right.left;
+                    var paret = node.right;
+                    while (next.left != null)
+                    {
+                        paret = next;
+                        next = next.left;
+                    }
+                    paret.left = next.right;
+                    next.right = node.right;
+                    next.left = node.left;
+                    node = next;
+                }
+            }
+        }
+
+        private void Insert(T value, ref Node node)
+        {
+            if (node == null)
+            {
+                node = new Node(value);
+                count++;
+                return;
+            }
+            int comp = comparer.Compare(value, node.data);
+            if (comp == 0)
+            {
+                return;
+            }
+            if (comp < 0)
+            {
+                Insert(value, ref node.left);
+            }
+            else
+            {
+                Insert(value, ref node.right);
+            }
+        }
+
         private class Node : IEnumerable<T>
         {
             public Node right;
