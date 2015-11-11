@@ -9,6 +9,53 @@ namespace Task1
 {
     public class BinaryTree<T>: IEnumerable<T>
     {
+        private Node root;
+        private int count;
+        private IComparer<T> comparer;
+
+        public BinaryTree(IComparer<T> comparer)
+        {
+            if (comparer == null)
+                throw new ArgumentNullException("Comparer object is null");
+            this.comparer = comparer;
+        }
+
+        public BinaryTree()
+        {
+            this.comparer = Comparer<T>.Default;
+        }
+
+        public int Count
+        {
+            get { return count; }
+        }
+
+        public IEnumerable<T> InOrder()
+        {
+            if (root != null)
+                foreach (var value in root.InOrder())
+                    yield return value;
+        }
+
+        public IEnumerable<T> PostOrder()
+        {
+            if (root != null)
+                foreach (var value in root.PostOrder())
+                    yield return value;
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            if (root != null)
+                foreach (var val in root)
+                    yield return val;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         private class Node : IEnumerable<T>
         {
             public Node right;
