@@ -20,6 +20,13 @@ namespace Task1
             this.comparer = comparer;
         }
 
+        public BinaryTree(Comparison<T> comparator)
+        {
+            if (comparator == null)
+                throw new ArgumentNullException("Comparision is null");
+            comparer = Comparer<T>.Create(comparator);
+        }
+
         public BinaryTree()
         {
             this.comparer = Comparer<T>.Default;
@@ -47,8 +54,8 @@ namespace Task1
         public IEnumerator<T> GetEnumerator()
         {
             if (root != null)
-                foreach (var val in root)
-                    yield return val;
+                foreach (var value in root)
+                    yield return value;
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -69,19 +76,13 @@ namespace Task1
         private bool Delete(T value, ref Node node)
         {
             if (node == null)
-            {
                 return false;
-            }
 
             int comp = comparer.Compare(node.data, value);
             if (comp < 0)
-            {
                 return Delete(value, ref node.right);
-            }
             if (comp > 0)
-            {
                 return Delete(value, ref node.left);
-            }
 
             DeleteNode(ref node);
             count--;
@@ -91,33 +92,30 @@ namespace Task1
         private void DeleteNode(ref Node node)
         {
             if (node.left == null && node.right == null)
-            {
                 node = null;
-            }
-            else if (node.left == null || node.right == null)
-            {
-                node = node.right ?? node.left;
-            }
-            else
-            {
-                if (node.right.left == null)
-                {
-                    node.right.left = node.left;
-                    node = node.right;
-                }
+            else 
+                if (node.left == null || node.right == null)
+                    node = node.right ?? node.left;
                 else
                 {
-                    var next = node.right.left;
-                    var paret = node.right;
-                    while (next.left != null)
+                    if (node.right.left == null)
                     {
-                        paret = next;
-                        next = next.left;
+                        node.right.left = node.left;
+                        node = node.right;
                     }
-                    paret.left = next.right;
-                    next.right = node.right;
-                    next.left = node.left;
-                    node = next;
+                    else
+                    {
+                        var next = node.right.left;
+                        var paret = node.right;
+                        while (next.left != null)
+                        {
+                            paret = next;
+                            next = next.left;
+                        }
+                        paret.left = next.right;
+                        next.right = node.right;
+                        next.left = node.left;
+                        node = next;
                 }
             }
         }
@@ -130,19 +128,14 @@ namespace Task1
                 count++;
                 return;
             }
+
             int comp = comparer.Compare(value, node.data);
             if (comp == 0)
-            {
                 return;
-            }
             if (comp < 0)
-            {
                 Insert(value, ref node.left);
-            }
             else
-            {
                 Insert(value, ref node.right);
-            }
         }
 
         private class Node : IEnumerable<T>
